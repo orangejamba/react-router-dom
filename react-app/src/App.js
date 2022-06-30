@@ -2,14 +2,17 @@
 import "./App.css";
 import React, { Component } from "react";
 import TOC from "./components/TOC";
-import Contents from "./components/Contents";
+import ReadContents from "./components/ReadContents";
 import Subject from "./components/Subject";
 import Control from "./components/Control";
+import CreateContents from "./components/CreateContents";
+import UpdateContents from "./components/UpdateContents";
 
 class App extends Component {
   //생성자 추가
   constructor(props) {
     super(props);
+    this.max_contents_id = 3;
     //this는 App
     this.state = {
       mode: "read",
@@ -26,10 +29,12 @@ class App extends Component {
   render() {
     console.log("App render");
     let _title,
-      _desc = null;
+      _desc,
+      _article = null;
     if (this.state.mode === "welcome") {
       _title = this.state.welcome.title;
       _desc = this.state.welcome.desc;
+      _article = <ReadContents title={_title} desc={_desc} />;
     } else if (this.state.mode === "read") {
       let i = 0;
       while (i < this.state.contents.length) {
@@ -41,6 +46,37 @@ class App extends Component {
         }
         i = i + 1;
       }
+      _article = <ReadContents title={_title} desc={_desc} />;
+    } else if (this.state.mode === "create") {
+      _article = (
+        <CreateContents
+          onSubmit={function (_title, _desc) {
+            // console.log(_title, _desc);
+            //객체형태로 배열에 추가해줘야한다.
+            this.max_contents_id = this.max_contents_id + 1;
+            // push
+            // 원본 훼손
+            // this.state.contents.push({
+            //   id: this.max_contents_id,
+            //   title: _title,
+            //   desc: _desc,
+            // });
+
+            // concat
+            // 원본데이터를 복사해와서 추가
+            let _contents = this.state.contents.concat({
+              id: this.max_contents_id,
+              title: _title,
+              desc: _desc,
+            });
+
+            this.setState({
+              // contents: this.state.contents,
+              contents: _contents,
+            });
+          }.bind(this)}
+        />
+      );
     }
     return (
       // 리엑트에서 리턴구문안에 쓸때
@@ -81,7 +117,8 @@ class App extends Component {
             });
           }.bind(this)}
         />
-        <Contents title={_title} desc={_desc} />
+        {_article}
+        {/* <ReadContents title={_title} desc={_desc} /> */}
       </div>
     );
   }
