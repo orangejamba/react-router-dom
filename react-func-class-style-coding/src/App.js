@@ -16,10 +16,11 @@ function FuncComp(props) {
   let number = numberState[0];
   let setNumber = numberState[1];
 
-  // let dateState = useState(new Date().toString);
+  // let dateState = useState((new Date().toString));
   // let _date = dateState[0];
   // let setDate = dateState[1];
 
+  // 주석처리 한 부분을 동시에 작업하는 방법. (ES6의 방식)
   let [_date, setDate] = useState(new Date().toString());
 
   return (
