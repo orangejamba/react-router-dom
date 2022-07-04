@@ -12,10 +12,13 @@ function App() {
 }
 
 function FuncComp(props) {
+  let numberState = useState(props.initNumber);
+  let number = numberState[0];
+  let setNumber = numberState[1];
   return (
     <div className="container">
       <h2>function style component</h2>
-      <p>Number:{props.initNumber}</p>
+      <p>Number:{number}</p>
     </div>
   );
 }
