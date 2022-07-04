@@ -1,5 +1,5 @@
 body {
-  background-color: rgb(84, 175, 115);
-  margin: 5px;
-  /* padding: 5px; */
+  /* background-image: url(../src/logo.svg); */
+  background-color: black;
+  color: white;
 }

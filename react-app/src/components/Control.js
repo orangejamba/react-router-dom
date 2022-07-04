@@ -33,7 +33,7 @@ class Subject extends Component {
             value="delete"
             onClick={function (e) {
               e.preventDefault();
-              this.props.onChangeMode("deleete");
+              this.props.onChangeMode("delete");
             }.bind(this)}
           ></input>
         </li>

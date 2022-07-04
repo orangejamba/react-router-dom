@@ -26,34 +26,41 @@ class App extends Component {
       ],
     };
   }
-  render() {
-    console.log("App render");
+  //getReadContents start
+  getReadContents() {
+    let i = 0;
+    while (i < this.state.contents.length) {
+      let data = this.state.contents[i];
+      if (data.id === this.state.selected_content_id) {
+        return data;
+      }
+      i = i + 1;
+    }
+  }
+  //getReadContents end
+
+  //getContents start
+
+  getContents() {
     let _title,
-      _desc,
-      _article = null;
+      _desc = null,
+      _article;
     if (this.state.mode === "welcome") {
       _title = this.state.welcome.title;
       _desc = this.state.welcome.desc;
       _article = <ReadContents title={_title} desc={_desc} />;
     } else if (this.state.mode === "read") {
-      let i = 0;
-      while (i < this.state.contents.length) {
-        let data = this.state.contents[i];
-        if (data.id === this.state.selected_content_id) {
-          _title = data.title;
-          _desc = data.desc;
-          break;
-        }
-        i = i + 1;
-      }
-      _article = <ReadContents title={_title} desc={_desc} />;
+      let _content = this.getReadContents();
+      _article = <ReadContents title={_content.title} desc={_content.desc} />;
     } else if (this.state.mode === "create") {
       _article = (
         <CreateContents
           onSubmit={function (_title, _desc) {
             // console.log(_title, _desc);
             //객체형태로 배열에 추가해줘야한다.
+
             this.max_contents_id = this.max_contents_id + 1;
+
             // push
             // 원본 훼손
             // this.state.contents.push({
@@ -64,7 +71,14 @@ class App extends Component {
 
             // concat
             // 원본데이터를 복사해와서 추가
-            let _contents = this.state.contents.concat({
+            // let _contents = this.state.contents.concat({
+            //   id: this.max_contents_id,
+            //   title: _title,
+            //   desc: _desc,
+            // });
+
+            let _contents = Array.from(this.state.contents);
+            _contents.push({
               id: this.max_contents_id,
               title: _title,
               desc: _desc,
@@ -72,12 +86,44 @@ class App extends Component {
 
             this.setState({
               // contents: this.state.contents,
+              mode: "read",
               contents: _contents,
+              selected_content_id: this.max_contents_id,
+            });
+          }.bind(this)}
+        />
+      );
+    } else if (this.state.mode === "update") {
+      let _content = this.getReadContents();
+      _article = (
+        <UpdateContents
+          data={_content}
+          onSubmit={function (_id, _title, _desc) {
+            let _contents = Array.from(this.state.contents);
+            let i = 0;
+            while (i < _contents.length) {
+              if (_contents[i].id == _id) {
+                _contents[i] = { id: _id, title: _title, desc: _desc };
+                break;
+              }
+              i = i + 1;
+            }
+            this.setState({
+              contents: _contents,
+              mode: "read",
             });
           }.bind(this)}
         />
       );
     }
+    return _article;
+  }
+
+  //getContents end
+
+  render() {
+    console.log("App render");
+
     return (
       // 리엑트에서 리턴구문안에 쓸때
       // 하나의 태그로만 감싸야한다
@@ -112,12 +158,31 @@ class App extends Component {
 
         <Control
           onChangeMode={function (_mode) {
-            this.setState({
-              mode: _mode,
-            });
+            if (_mode === "delete") {
+              if (window.confirm("really?")) {
+                let _contents = Array.from(this.state.contents);
+                let i = 0;
+                while (i < _contents.length) {
+                  if (_contents[i].id === this.state.selected_content_id) {
+                    _contents.splice(i, 1);
+                    break;
+                  }
+                  i = i + 1;
+                }
+                this.setState({
+                  mode: "welcome",
+                  contents: _contents,
+                });
+                alert("deleted!");
+              }
+            } else {
+              this.setState({
+                mode: _mode,
+              });
+            }
           }.bind(this)}
         />
-        {_article}
+        {this.getContents()}
         {/* <ReadContents title={_title} desc={_desc} /> */}
       </div>
     );
